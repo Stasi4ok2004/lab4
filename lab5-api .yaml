@@ -1,0 +1,1537 @@
+openapi: 3.0.3
+info:
+  title: Lab 5 - OpenAPI 3.0
+  description: |-
+    API до сервісу створення плейлістів з музикою
+  version: 1.0.11
+servers:
+  - url: https://localhost:8000/api/
+tags:
+  - name: users
+    description: Web sevice users and superusers
+    
+  - name: songs
+    description: Songs on web service
+
+  - name: artists
+    description: Web service artists
+    
+  - name: category
+    description: Web service songs categoryes
+    
+  - name: playlists
+    description: Web service playlists
+    
+  - name: albums
+    description: Web service albums
+paths:
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUser'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetUser'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+  /users/createWithList:
+    post:
+      tags:
+        - users
+      summary: Creates list of users with given input array
+      description: Creates list of users with given input array
+      operationId: createUsersWithListInput
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/GetUser'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUser'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+        '403':
+          description: Forbiddent to access  
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+  /users/login:
+    get:
+      tags:
+        - users
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: login
+          in: query
+          description: The login to sing in
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+        '404':
+          description: No page found
+        '403':
+          description: Forbidden to log in
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: id
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUser'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - users
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUser'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetUser'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUser'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+        '403':
+          description: Forbiddent to access  
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+    delete:
+      tags:
+        - users
+      summary: Delete user
+      description: This can be done by the logged in user and admin.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUser'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+        - admin_auth:
+            - write:users
+            - read:users
+  /artists:
+    get:
+      tags:
+        - artists
+      summary: Get all artist
+      description: This can be done by anyone who entered site.
+      operationId: getArtistId
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtists'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetArtists'
+    post:
+      tags:
+        - artists
+      summary: Add new artist by parametrs if not exitsts
+      description: This can only be done by the logged in user.
+      operationId: newArtistId
+      requestBody:
+        description: Add new artist by his name and last name
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetArtists'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetArtists'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetArtists'
+      responses:
+        '200':
+            description: successful operation
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+        '400':
+          description: Invalid username/password supplied
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+  /artists/{first_name}/{last_name}:
+    get:
+      tags:
+        - artists
+      summary: Get artist by first name and last name
+      description: ''
+      operationId: getArtistByname
+      parameters:
+        - name: first_name
+          in: path
+          description: 'The name that needs to be fetched. Use artist first name '
+          required: true
+          schema:
+            type: string
+        - name: last_name
+          in: path
+          description: 'The name that needs to be fetched. Use artist last name '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtists'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetArtists'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Artist not found
+  /artists/{id}:
+    put:
+      tags:
+        - artists
+      summary: Add new artist by parametrs if not exitsts
+      description: This can only be done by the logged in user.
+      operationId: updateArtistId
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be added
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Add new artist by his name and last name
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetArtists'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetArtists'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetArtists'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetArtists'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetArtists'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+    delete:
+      tags:
+        - artists
+      summary: Delete artist
+      description: This can be done by the admin.
+      operationId: deleteArtistId
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+  /songs:
+    get:
+      tags:
+        - songs
+      summary: Return all songs
+      description: This can be done by anybody
+      operationId: getSongs
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+    post:
+        tags:
+          - songs
+        summary: Add new song
+        description: This can only be done by the logged in user.
+        operationId: addSong
+        requestBody:
+          description: Created song object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/GetSongs'          
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/GetSongs'
+          '400':
+            description: User must be loged in
+        security:
+          - user_auth:
+              - write:users
+              - read:users
+          - admin_auth:
+              - write:users
+              - read:users
+  /songs/{song_title}:
+    get:
+      tags:
+        - songs
+      summary: Get song by title
+      description: ''
+      operationId: getSongByname
+      parameters:
+        - name: song_title
+          in: path
+          description: 'Song title needed to by done to make get request '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSongs'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /songs/{id}:
+    put:
+        tags:
+          - songs
+        summary: Update song info
+        description: This can only be done by the logged in user.
+        operationId: updateSong
+        parameters:
+          - name: id
+            in: path
+            description: 'Title of new song which wanted to add '
+            required: true
+            schema:
+              type: integer
+        requestBody:
+          description: Update song object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/GetSongs'          
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/GetSongs'
+          '400':
+            description: Invalid username supplied
+          '404':
+            description: User not found
+          '403':
+            description: Forbidden to update song
+          
+            
+        security:
+          - user_auth:
+              - write:users
+              - read:users
+          - admin_auth:
+              - write:users
+              - read:users
+    delete:
+      tags:
+        - songs
+      summary: Delete song
+      description: This can be done by the admin.
+      operationId: deleteSongId
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Song not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+        - admin_auth:
+            - write:users
+            - read:users
+  /category:
+    get:
+      tags:
+        - category
+      summary: Return all existing categoryes
+      description: This can be done by anybody
+      operationId: getCategory
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+    post:
+      tags:
+        - category
+      summary: Create new song category
+      description: This can only be done by the admin.
+      operationId: createCategory
+      requestBody:
+        description: Created category object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetCategory'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetCategory'
+      responses:
+       '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategory'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+  /category/{category_name}:
+    get:
+      tags:
+        - category
+      summary: Return some specific category
+      description: This can be done by anybody
+      operationId: getSomeCategory
+      parameters:
+        - name: category_name
+          in: path
+          description: 'Name of category that have to be get'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategory'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+        '404':
+          description: Category not found
+  /category/{id}:
+     put:
+        tags:
+          - category
+        summary: Update some song category
+        description: This can only be done by the admin.
+        operationId: updateCategory
+        parameters:
+          - name: id
+            in: path
+            description: 'Name of the category that update'
+            required: true
+            schema:
+              type: integer
+        requestBody:
+          description: Created category object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetCategory'
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/GetCategory'          
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/GetCategory'
+          '400':
+            description: Invalid username supplied
+          '404':
+            description: Category not found
+        security:
+          - admin_auth:
+              - write:users
+              - read:users
+     delete:
+      tags:
+        - category
+      summary: Delete category
+      description: This can be done by the admin.
+      operationId: deleteCategoryId
+      parameters:
+        - name: id
+          in: path
+          description: The id that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Category not found
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+  /playlists:
+    get:
+      tags:
+        - playlists
+      summary: Return all public playlists
+      description: This can be done by anybody
+      operationId: getAllPlaylists
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlaylist'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetPlaylist'
+  /playlists/:
+    post:
+        tags:
+          - playlists
+        summary: Create new playlist by some user
+        description: This can only be done by the logged in user.
+        operationId: createNewPlayList
+        requestBody:
+          description: Created playlist object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlaylist'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetPlaylist'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetPlaylist'
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/GetUser'          
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/GetUser'
+          '400':
+            description: Invalid username supplied
+        security:
+          - user_auth:
+              - write:users
+              - read:users
+  /playlists/public/{playlistname}:
+    get:
+      tags:
+        - playlists
+      summary: Return user public playlists
+      description: This can be done by anybody
+      operationId: getUserPlaylists
+      parameters:
+        - name: playlistname
+          in: path
+          description: 'Name of publich playlist  of some user in which enter'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operatio
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+    put:
+        tags:
+          - playlists
+        summary: Update playlist
+        description: This can only be done by the logged in user.
+        operationId: updatePublicPlaylist
+        parameters:
+          - name: playlistname
+            in: path
+            description: name that need to be deleted
+            required: true
+            schema:
+              type: string
+              
+        requestBody:
+          description: Update an existent public playlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+        responses:
+          '200':
+            description: successful operatio
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+          '404':
+            description: Not found      
+  /playlists/public/{playlist_id}/:
+    put:
+        tags:
+          - playlists
+        summary: Update playlist
+        description: This can only be done by the logged in user.
+        operationId: updatePublicPlaylists
+        parameters:
+          - name: playlist_id
+            in: path
+            description: name that need to be deleted
+            required: true
+            schema:
+              type: integer
+              
+        requestBody:
+          description: Update an existent public playlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetSongs'
+        responses:
+          '200':
+            description: successful operatio
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+          '404':
+            description: Not found   
+    delete:
+      tags:
+        - playlists
+      summary: Delete existing public playlist
+      description: This can be done by the logged in user and admin.
+      operationId: deletePublicPlaylist
+      parameters:
+        - name: playlist_id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: integer
+            
+      responses:
+        '200':
+          description: successful operatio
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Playlist not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+  /playlists/private/:
+    get:
+      tags:
+        - playlists
+      summary: Return user`s all private playlists
+      description: This only can be done by logined user 
+      operationId: getUsersPrivatePlaylists
+      responses:
+          '200':
+            description: successful operatio
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+          '400':
+            description: Invalid username/password supplied
+          '404':
+            description: Playlist not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+    post:
+      tags:
+        - playlists
+      summary: Create new private playlist by some user
+      description: This can only be done by the logged in user.
+      operationId: createNewPrivatePlayList
+      requestBody:
+        description: Created playlist object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPlaylist'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetPlaylist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetPlaylist'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username supplied
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+  /playlists/private/{playlistname}:
+    get:
+      tags:
+        - playlists
+      summary: Return user private playlists
+      description: This can be done by anybody
+      operationId: getUserPrivatePlaylists
+      parameters:
+        - name: playlistname
+          in: path
+          description: 'Name of the private playlist'
+          required: true
+          schema:
+            type: string
+      responses:
+          '200':
+            description: successful operatio
+            content:
+              application/xml:
+                schema:
+                  type: string
+              application/json:
+                schema:
+                  type: string
+          '400':
+            description: Invalid username/password supplied
+          '404':
+            description: Playlist not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+  /playlists/private/{playlist_id}:
+    put:
+      tags:
+        - playlists
+      summary: Update private playlist
+      description: This can only be done by the logged in user.
+      operationId: updatePrivatePlaylist
+      parameters:
+        - name: playlist_id
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: integer
+            
+      requestBody:
+        description: Update an existent private playlist
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPlaylist'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetPlaylist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetPlaylist'
+      responses:
+          '200':
+              description: successful operation
+              content:
+                application/xml:
+                  schema:
+                    type: string
+                application/json:
+                  schema:
+                    type: string
+          '400':
+            description: Invalid username/password supplied
+          '404':
+            description: Playlist not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+    delete:
+      tags:
+        - playlists
+      summary: Delete existing private playlist
+      description: This can be done by the logged in user.
+      operationId: deletePrivatePlaylist
+      parameters:
+        - name: playlist_id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Playlist not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+  /albums:
+     get:
+      tags:
+        - albums
+      summary: Get all albums
+      description: This can be done by anyone who entered site.
+      operationId: getAlbum
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+     post:
+        tags:
+          - albums
+        summary: Add new album
+        description: This can only be done by the logged in user.
+        operationId: addAlbum
+        requestBody:
+          description: Created song object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+        responses:
+          default:
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/GetAlbums'
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/GetAlbums'
+  /albums/by_names/{albumname}:
+    get:
+      tags:
+        - albums
+      summary: Get album by title
+      description: ''
+      operationId: getAlbumByname
+      parameters:
+        - name: albumname
+          in: path
+          description: 'Album name'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+        '404':
+          description: Album not found
+  /albums/by_artists/{artistname}:
+    get:
+      tags:
+        - albums
+      summary: Return all album of some artist
+      description: ''
+      operationId: getAlbumByArtist
+      parameters:
+        - name: artistname
+          in: path
+          description: 'Name of some artist'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+        '404':
+          description: User not found
+  /albums/{id}:
+     put:
+      tags:
+        - albums
+      summary: Update album
+      description: This can only be done by the logged in user.
+      operationId: updateAlbum
+      parameters:
+        - name: id
+          in: path
+          description: name that need to be update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update an existent album
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAlbums'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetAlbums'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetAlbums'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GetAlbums'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Album not found
+      security:
+        - admin_auth:
+            - write:users
+            - read:users
+        - user_auth:
+            - write:users
+            - read:users 
+     delete:
+      tags:
+        - albums
+      summary: Delete album
+      description: This can be done by the admin and user who added it.
+      operationId: deleteAlbumId
+      parameters:
+        - name: id
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - user_auth:
+            - write:users
+            - read:users
+        - admin_auth:
+            - write:users
+            - read:users
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        frist_name:
+          type: string
+          example: Maks
+        last_name:
+          type: string
+          example: Orlianskyi
+        username:
+          type: string
+          example: user123
+        login:
+          type: string
+          example: max123
+        password:
+          type: string
+          format: password
+          example: qwe123qwe
+        role:
+          type: string
+          enum: 
+            - user
+            - superuser
+      xml:
+        name: users
+    GetUser:
+      type: object
+      properties:
+        frist_name:
+          type: string
+          example: Maks
+        last_name:
+          type: string
+          example: Orlianskyi
+          
+        username:
+          type: string
+          example: user123
+        login:
+          type: string
+          example: max123
+        password:
+          type: string
+          format: password
+          example: qwe123qwe
+        role:
+          type: string
+          enum: 
+            - user
+            - superuser
+      xml:
+        name: users
+    Playlists:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        creador_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Users'
+          example: 124
+        artist_id:
+          type: integer
+          $ref: '#/components/schemas/Artists'
+          example: 4
+        song_id:
+          type: integer
+          $ref: '#/components/schemas/Songs'
+          example: 5
+        status:
+          type: string
+          enum:
+          - private
+          - public
+        
+      xml:
+        name: playlists
+    GetPlaylist:
+      type: object
+      properties:
+        creador_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Users'
+          example: 124
+        artist_id:
+          type: integer
+          $ref: '#/components/schemas/Artists'
+          example: 4
+        song_id:
+          type: integer
+          $ref: '#/components/schemas/Songs'
+          example: 5
+        status:
+          type: string
+          enum:
+          - private
+          - public
+        
+      xml:
+        name: playlists
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: HipHop
+      xml:
+        name: category
+    GetCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          example: HipHop
+      xml:
+        name: category
+    Artists:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        first_name:
+          type: string
+          example: Leroy
+        last_name:
+          type: string
+          example: Jenkins
+        rating:
+          type: integer
+          example: 4
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+
+      xml:
+        name: artists
+    GetArtists:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: Leroy
+        last_name:
+          type: string
+          example: Jenkins
+        rating:
+          type: integer
+          example: 4
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+      xml:
+        name: artists 
+    Songs:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        Category_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Category'
+          
+        title:
+          type: string
+          example: Wham! - Last Christmas I gave you my heart 
+        description:
+          type: string
+          example: lorem ipsum...
+        lyrics:
+          type: string
+          example: Last Christmas I gave you my heart...
+        rating:
+          type: integer
+          format: int64
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        duration:
+          type: number
+          format: float
+          example: 3.43
+
+      xml:
+        name: songs
+    GetSongs:
+      type: object
+      properties:
+        Category_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Category'
+          
+        title:
+          type: string
+          example: Wham! - Last Christmas I gave you my heart 
+        description:
+          type: string
+          example: lorem ipsum...
+        lyrics:
+          type: string
+          example: Last Christmas I gave you my heart...
+        rating:
+          type: integer
+          format: int64
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        duration:
+          type: number
+          format: float
+          example: 3.43
+
+      xml:
+        name: songs
+    Albums:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        
+        album_name:
+          type: string
+          example: Stressed Out
+
+        relesed:
+          type: string
+          format: date-time
+          
+        artist_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Artists'
+        
+        song_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Songs'
+      xml:
+        name: albums
+    GetAlbums:
+      type: object
+      properties:
+        album_name:
+          type: string
+          example: Stressed Out
+
+        relesed:
+          type: string
+          format: date-time
+          
+        artist_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Artists'
+        
+        song_id:
+          type: integer
+          format: int64
+          $ref: '#/components/schemas/Songs'
+      xml:
+        name: albums
+  securitySchemes:
+    user_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:users: modify users
+            read:users: read users
+    admin_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:users: modify all
+            read:users: read all
