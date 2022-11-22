@@ -1,12 +1,32 @@
-from sqlalchemy import *
+
+{
+
+    "title": "Wham! - Last Christmas I gave you my heart",
+    "description": "lorem ipsum...",
+    "lyrics": "Last Christmas I gave you my heart...",
+    "rating": 1,
+    "duration": 3.43,
+    "category_id": 1
+}
+
+
+
+
+
+import enum
+import datetime
+import alembic
+import sqlalchemy.orm
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import *
 
-engine = create_engine('mysql://root:1234@localhost:3306/playlist-service', echo=False)
-SessionFactory = sessionmaker(bind=engine)
-
-session = SessionFactory()
+engine = create_engine("mysql://root:root@localhost:3306/api")
+Session = sessionmaker(bind=engine)
 
 Base = declarative_base()
+metadata = Base.metadata
+
 
 class User(Base):
     __tablename__ = "user"
@@ -14,9 +34,10 @@ class User(Base):
     id = Column(Integer, primary_key = True, autoincrement = True)
     first_name = Column(String(45), nullable=False)
     last_name = Column(String(45), nullable=False)
+    username = Column(String(45), nullable=False)
     login = Column(String(45), nullable=False)
-    password = Column(String(45), nullable=False)
-    role = Column(Enum("USER", "SUPERUSER"), default='USER', nullable=False)
+    password = Column(String(200), nullable=False)
+    role = Column(Enum("user", "superuser"), default='user', nullable=False)
 
 
 class Artist(Base):
@@ -25,12 +46,11 @@ class Artist(Base):
     id = Column(Integer, primary_key = True, autoincrement = True)
     first_name = Column(String(45), nullable=False)
     last_name = Column(String(45), nullable=False)
-    raiting = Column(Enum("1", "2", "3", "4", "5"), nullable=False)
+    rating = Column(Enum("1", "2", "3", "4", "5"), nullable=False)
 
 
 class Category(Base):
     __tablename__ = "category"
-
     id = Column(Integer, primary_key = True, autoincrement = True)
     name = Column(String(45), nullable=False)
 
@@ -45,11 +65,11 @@ class Playlist(Base):
 
 class Song(Base):
     __tablename__ = "song"
-
-    id  = Column(Integer, primary_key = True, autoincrement = True)
+    id = Column(Integer, primary_key = True, autoincrement = True)
     title = Column(String(255), nullable=False)
+    description = Column(String(1000), nullable=False)
     lyrics = Column(String(10000), nullable=False)
-    raiting = Column(Enum("1", "2", "3", "4", "5"), nullable=False)
+    rating = Column(Enum("1", "2", "3", "4", "5"), nullable=False)
     duration = Column(Float(2), nullable=False)
     category_id = Column(Integer, ForeignKey("category.id"), nullable=False, primary_key=True)
 
@@ -63,4 +83,4 @@ class Album(Base):
     song_id = Column(Integer, ForeignKey("song.id"), nullable=False, primary_key=True)
 
 
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
