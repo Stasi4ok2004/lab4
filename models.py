@@ -9,10 +9,6 @@
     "category_id": 1
 }
 
-
-
-
-
 import enum
 import datetime
 import alembic
@@ -21,7 +17,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import *
 
-engine = create_engine("mysql://root:root@localhost:3306/api")
+engine = create_engine("mysql://root:root@localhost:5900/playlists")
 Session = sessionmaker(bind=engine)
 
 Base = declarative_base()
@@ -34,7 +30,7 @@ class User(Base):
     id = Column(Integer, primary_key = True, autoincrement = True)
     first_name = Column(String(45), nullable=False)
     last_name = Column(String(45), nullable=False)
-    username = Column(String(45), nullable=False)
+    username = Column(String(45), nullable=False, unique=True)
     login = Column(String(45), nullable=False)
     password = Column(String(200), nullable=False)
     role = Column(Enum("user", "superuser"), default='user', nullable=False)
@@ -42,7 +38,6 @@ class User(Base):
 
 class Artist(Base):
     __tablename__ = "artist"
-
     id = Column(Integer, primary_key = True, autoincrement = True)
     first_name = Column(String(45), nullable=False)
     last_name = Column(String(45), nullable=False)

@@ -77,7 +77,6 @@ class CreateAlbum(Schema):
     artist_id = fields.Integer(required=True)
     song_id = fields.Integer(required=True)
 
-
 class GetUsers(Schema):
     first_name = fields.String()
     last_name = fields.String()
